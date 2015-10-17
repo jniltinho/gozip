@@ -3,11 +3,8 @@ package gozip
 import (
 	"archive/zip"
 	"errors"
-	"flag"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
