@@ -5,11 +5,12 @@ import (
 	"github.com/nareix/curl"
 	"github.com/vaughan0/go-ini"
 	"log"
+	"os"
 	"strings"
 	"time"
 )
 
-func DownloadFile(url string, fileName string) {
+func DownloadFile(url string, fileName string, verbose bool) {
 	req := curl.New(url)
 
 	req.Method("POST")
@@ -17,17 +18,20 @@ func DownloadFile(url string, fileName string) {
 
 	// Print progress status per one second
 	req.Progress(func(p curl.ProgressStatus) {
-		log.Println(
-			"speed", curl.PrettySpeedString(p.Speed),
-			"len", curl.PrettySizeString(p.ContentLength),
-			"got", curl.PrettySizeString(p.Size),
-		)
+		if verbose {
+			log.SetOutput(os.Stdout)
+			log.Println(
+				"speed", curl.PrettySpeedString(p.Speed),
+				"len", curl.PrettySizeString(p.ContentLength),
+				"got", curl.PrettySizeString(p.Size),
+			)
+		}
 	}, time.Second)
 
 	req.Do()
 }
 
-func DownloadFromUrl(url string) {
+func DownloadFromUrl(url string, verbose bool) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
 	req := curl.New(url)
@@ -37,11 +41,14 @@ func DownloadFromUrl(url string) {
 
 	// Print progress status per one second
 	req.Progress(func(p curl.ProgressStatus) {
-		log.Println(
-			"speed", curl.PrettySpeedString(p.Speed),
-			"len", curl.PrettySizeString(p.ContentLength),
-			"got", curl.PrettySizeString(p.Size),
-		)
+		if verbose {
+			log.SetOutput(os.Stdout)
+			log.Println(
+				"speed", curl.PrettySpeedString(p.Speed),
+				"len", curl.PrettySizeString(p.ContentLength),
+				"got", curl.PrettySizeString(p.Size),
+			)
+		}
 	}, time.Second)
 
 	req.Do()
@@ -54,7 +61,7 @@ func GetIni(inifile, section, name string) string {
 	}
 	getname, ok := cfg.Get(section, name)
 	if !ok {
-		log.Fatal("app not found")
+		log.Fatal("app not found in file INI ", inifile)
 	}
 	return getname
 }
@@ -71,4 +78,18 @@ func GoQueryGet(url, find1, find2 string) string {
 	})
 
 	return fileName
+}
+
+func LogToFile(logfile, msg string, verbose bool) {
+	if verbose {
+		log.SetOutput(os.Stdout)
+		log.Println(msg)
+	}
+	f, err := os.OpenFile(logfile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Println("error opening file: %v", err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
+	log.Println(msg)
 }
