@@ -8,8 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-
-	patch "github.com/jniltinho/gozip/patchzip"
 )
 
 func IsZip(path string) bool {
@@ -45,7 +43,7 @@ func Zip(path string, dirs []string) (err error) {
 				return err
 			}
 
-			fh, err := patch.FileInfoHeader(info)
+			fh, err := zip.FileInfoHeader(info)
 			if err != nil {
 				return err
 			}
