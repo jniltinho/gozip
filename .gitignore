@@ -25,5 +25,5 @@ _testmain.go
 
 #Custom
 .DS_Store
-bee
+comandos_git.sh
 *.exe~

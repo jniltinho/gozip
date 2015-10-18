@@ -1,7 +1,9 @@
 package gozip
 
 import (
+	"github.com/PuerkitoBio/goquery"
 	"github.com/nareix/curl"
+	"github.com/vaughan0/go-ini"
 	"log"
 	"strings"
 	"time"
@@ -43,4 +45,30 @@ func DownloadFromUrl(url string) {
 	}, time.Second)
 
 	req.Do()
+}
+
+func GetIni(inifile, section, name string) string {
+	cfg, err := ini.LoadFile(inifile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	getname, ok := cfg.Get(section, name)
+	if !ok {
+		log.Fatal("app not found")
+	}
+	return getname
+}
+
+func GoQueryGet(url, find1, find2 string) string {
+	var fileName string
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	doc.Find(find1).Each(func(i int, s *goquery.Selection) {
+		fileName = s.Find(find2).Text()
+	})
+
+	return fileName
 }
