@@ -35,7 +35,8 @@ func Zip(path string, dirs []string) (err error) {
 		return
 	}
 
-	w := patch.NewWriterAt(f, startoffset)
+	w := zip.NewWriter(f)
+	w.SetOffset(startoffset)
 
 	for _, dir := range dirs {
 		err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
